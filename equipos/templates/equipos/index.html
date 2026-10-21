@@ -1,0 +1,264 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Club de Fútbol | Panel de Equipos</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Clubes & Planteles</h1>
+      <p>Selecciona un club para explorar su nómina de jugadores</p>
+    </header>
+
+    <!-- GRILLA PRINCIPAL DE EQUIPOS -->
+    <div class="grid-equipos">
+      {% for equipo in equipos %}
+        <div class="equipo-card" 
+             data-nombre="{{ equipo.nombre }}"
+             data-pais="{{ equipo.pais }}"
+             data-ciudad="{{ equipo.ciudad }}"
+             data-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}">
+          
+          <div class="equipo-header-main">
+            <div class="escudo-wrapper-main">
+              {% if equipo.imagen %}
+                <img src="{{ equipo.imagen.url }}" alt="{{ equipo.nombre }}" class="escudo-img-main">
+              {% else %}
+                <div class="escudo-placeholder-main">{{ equipo.nombre|slice:":1" }}</div>
+              {% endif %}
+            </div>
+            
+            <h2>{{ equipo.nombre }}</h2>
+            <div class="equipo-ubicacion">📍 {{ equipo.ciudad }}, {{ equipo.pais }}</div>
+            <span class="badge-plantel-conteo">👥 {{ equipo.jugadores.count }} jugadores</span>
+          </div>
+
+          <!-- DATOS OCULTOS DE LOS JUGADORES -->
+          <template class="datos-jugadores">
+            {% for jugador in equipo.jugadores.all %}
+              <div class="modal-jugador-item"
+                   data-nombre="{{ jugador.nombre }}"
+                   data-posicion="{{ jugador.posicion }}"
+                   data-pais="{{ jugador.pais_nacimiento }}"
+                   data-descripcion="{{ jugador.descripcion|default:'Sin descripción disponible.' }}"
+                   data-imagen="{% if jugador.imagen %}{{ jugador.imagen.url }}{% endif %}"
+                   data-equipo-nombre="{{ equipo.nombre }}"
+                   data-equipo-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}">
+                
+                {% if jugador.imagen %}
+                  <img src="{{ jugador.imagen.url }}" alt="{{ jugador.nombre }}" class="modal-jugador-foto">
+                {% else %}
+                  <div class="modal-jugador-foto modal-jugador-placeholder">⚽</div>
+                {% endif %}
+
+                <div class="modal-jugador-info">
+                  <div class="modal-jugador-nombre">{{ jugador.nombre }}</div>
+                  <div class="modal-jugador-nacion">📍 {{ jugador.pais_nacimiento }}</div>
+                </div>
+
+                <span class="badge-posicion">{{ jugador.posicion }}</span>
+              </div>
+            {% empty %}
+              <div class="empty-state-modal">Este equipo aún no tiene jugadores inscritos.</div>
+            {% endfor %}
+          </template>
+
+        </div>
+      {% empty %}
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <h2>No se encontraron equipos registrados</h2>
+          <p>Registra tus primeros clubes desde el panel de administración.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 1. MODAL DEL EQUIPO (LISTA DE JUGADORES) -->
+  <div id="modalEquipoOverlay" class="modal-overlay">
+    <div class="modal-equipo-card">
+      <button id="modalEquipoClose" class="modal-close" aria-label="Cerrar">&times;</button>
+      
+      <div class="modal-equipo-hero">
+        <div class="modal-hero-escudo">
+          <img id="modalHeroImg" src="" alt="Escudo Equipo" class="modal-hero-img">
+          <div id="modalHeroPlaceholder" class="modal-hero-placeholder">🛡️</div>
+        </div>
+        <div class="modal-hero-info">
+          <h2 id="modalHeroNombre">Nombre Club</h2>
+          <p id="modalHeroUbicacion">📍 Ubicación</p>
+        </div>
+      </div>
+
+      <div class="modal-plantel-wrapper">
+        <div class="modal-plantel-header">
+          <h3>Plantilla Oficial</h3>
+          <span id="modalPlantelBadge" class="modal-plantel-badge">0 Jugadores</span>
+        </div>
+
+        <div id="modalJugadoresContenedor" class="modal-jugadores-lista">
+          <!-- Inyectado por JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MODAL DE FICHA DEL JUGADOR -->
+  <div id="modalJugadorOverlay" class="modal-overlay">
+    <div class="modal-jugador-detalle-card">
+      <button id="modalJugadorVolver" class="modal-back-btn" aria-label="Volver">← Volver</button>
+      <button id="modalJugadorClose" class="modal-close" aria-label="Cerrar">&times;</button>
+      
+      <div class="modal-cover">
+        <img id="detalleJugadorImg" src="" alt="Foto Jugador" class="modal-img">
+        <div id="detalleJugadorPlaceholder" class="modal-placeholder">⚽</div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-meta-top">
+          <span id="detallePosicion" class="badge-posicion">POSICIÓN</span>
+          <div class="modal-equipo-tag">
+            <img id="detalleEquipoEscudo" src="" alt="Escudo" class="modal-escudo-mini">
+            <span id="detalleEquipoNombre">Equipo</span>
+          </div>
+        </div>
+
+        <h2 id="detalleNombre" class="modal-title">Nombre Jugador</h2>
+        <p id="detallePais" class="modal-sub">📍 Nacionalidad</p>
+
+        <div class="modal-divider"></div>
+
+        <h3>Perfil del Deportista</h3>
+        <p id="detalleDescripcion" class="modal-text">Descripción...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE NAVEGACIÓN -->
+  <script>
+    // Referencias Modal Equipo
+    const equipoOverlay = document.getElementById('modalEquipoOverlay');
+    const equipoClose = document.getElementById('modalEquipoClose');
+    const heroImg = document.getElementById('modalHeroImg');
+    const heroPlaceholder = document.getElementById('modalHeroPlaceholder');
+    const heroNombre = document.getElementById('modalHeroNombre');
+    const heroUbicacion = document.getElementById('modalHeroUbicacion');
+    const contenedorJugadores = document.getElementById('modalJugadoresContenedor');
+    const plantelBadge = document.getElementById('modalPlantelBadge');
+
+    // Referencias Modal Ficha Jugador
+    const jugadorOverlay = document.getElementById('modalJugadorOverlay');
+    const jugadorClose = document.getElementById('modalJugadorClose');
+    const jugadorVolver = document.getElementById('modalJugadorVolver');
+    const detImg = document.getElementById('detalleJugadorImg');
+    const detPlaceholder = document.getElementById('detalleJugadorPlaceholder');
+    const detPos = document.getElementById('detallePosicion');
+    const detEqEscudo = document.getElementById('detalleEquipoEscudo');
+    const detEqNombre = document.getElementById('detalleEquipoNombre');
+    const detNombre = document.getElementById('detalleNombre');
+    const detPais = document.getElementById('detallePais');
+    const detDesc = document.getElementById('detalleDescripcion');
+
+    // 1. Abrir Modal de Equipo
+    document.querySelectorAll('.equipo-card').forEach(card => {
+      card.addEventListener('click', () => {
+        heroNombre.textContent = card.dataset.nombre;
+        heroUbicacion.textContent = `📍 ${card.dataset.ciudad}, ${card.dataset.pais}`;
+        
+        const escudoUrl = card.dataset.escudo;
+        if (escudoUrl) {
+          heroImg.src = escudoUrl;
+          heroImg.style.display = 'block';
+          heroPlaceholder.style.display = 'none';
+        } else {
+          heroImg.style.display = 'none';
+          heroPlaceholder.style.display = 'flex';
+          heroPlaceholder.textContent = card.dataset.nombre.charAt(0);
+        }
+
+        const template = card.querySelector('.datos-jugadores');
+        contenedorJugadores.innerHTML = '';
+        const contenidoClonado = template.content.cloneNode(true);
+        contenedorJugadores.appendChild(contenidoClonado);
+
+        const total = contenedorJugadores.querySelectorAll('.modal-jugador-item').length;
+        plantelBadge.textContent = `${total} Jugadores`;
+
+        // Asignar evento click a cada jugador inyectado
+        contenedorJugadores.querySelectorAll('.modal-jugador-item').forEach(jugadorItem => {
+          jugadorItem.addEventListener('click', () => abrirFichaJugador(jugadorItem));
+        });
+
+        equipoOverlay.classList.add('active');
+      });
+    });
+
+    // 2. Abrir Modal de Ficha del Jugador
+    function abrirFichaJugador(item) {
+      detNombre.textContent = item.dataset.nombre;
+      detPos.textContent = item.dataset.posicion;
+      detPais.textContent = '📍 ' + item.dataset.pais;
+      detDesc.textContent = item.dataset.descripcion;
+      detEqNombre.textContent = item.dataset.equipoNombre;
+
+      const escudoClub = item.dataset.equipoEscudo;
+      if (escudoClub) {
+        detEqEscudo.src = escudoClub;
+        detEqEscudo.style.display = 'block';
+      } else {
+        detEqEscudo.style.display = 'none';
+      }
+
+      const foto = item.dataset.imagen;
+      if (foto) {
+        detImg.src = foto;
+        detImg.style.display = 'block';
+        detPlaceholder.style.display = 'none';
+      } else {
+        detImg.style.display = 'none';
+        detPlaceholder.style.display = 'flex';
+      }
+
+      jugadorOverlay.classList.add('active');
+    }
+
+    // Funciones de Cierre y Retroceso
+    equipoClose.addEventListener('click', () => equipoOverlay.classList.remove('active'));
+    
+    // Botón Volver: solo cierra la ficha del jugador dejando abierto el equipo
+    jugadorVolver.addEventListener('click', () => jugadorOverlay.classList.remove('active'));
+    
+    // Botón X: cierra la ficha del jugador
+    jugadorClose.addEventListener('click', () => jugadorOverlay.classList.remove('active'));
+
+    // Clic en fondo oscuro
+    equipoOverlay.addEventListener('click', (e) => {
+      if (e.target === equipoOverlay) equipoOverlay.classList.remove('active');
+    });
+    jugadorOverlay.addEventListener('click', (e) => {
+      if (e.target === jugadorOverlay) jugadorOverlay.classList.remove('active');
+    });
+
+    // Tecla ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (jugadorOverlay.classList.contains('active')) {
+          jugadorOverlay.classList.remove('active');
+        } else if (equipoOverlay.classList.contains('active')) {
+          equipoOverlay.classList.remove('active');
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
