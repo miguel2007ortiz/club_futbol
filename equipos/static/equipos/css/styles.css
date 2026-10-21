@@ -50,7 +50,7 @@ header p {
   font-size: 1.1rem;
 }
 
-/* GRILLA DE TARJETAS DE EQUIPO */
+/* GRILLA DE TARJETAS DE EQUIPO (DISEÑO ANTERIOR RESTAURADO) */
 .grid-equipos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -121,6 +121,10 @@ header p {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-bottom: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
 }
 
 .badge-plantel-conteo {
@@ -242,7 +246,13 @@ header p {
   margin-bottom: 0.25rem;
 }
 
-.modal-hero-info p {
+.modal-hero-ubicacion-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-hero-ubicacion-box p {
   color: var(--text-muted);
   font-size: 0.95rem;
 }
@@ -293,11 +303,17 @@ header p {
   border-radius: 12px;
   border: 1px solid transparent;
   transition: background 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
 }
 
 .modal-jugador-item:hover {
   background: #232e40;
   border-color: #2e3e57;
+}
+
+.modal-jugador-item:active {
+  transform: scale(0.98);
 }
 
 .modal-jugador-foto {
@@ -329,6 +345,10 @@ header p {
 .modal-jugador-nacion {
   font-size: 0.8rem;
   color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
 }
 
 .badge-posicion {
@@ -346,15 +366,6 @@ header p {
   padding: 2rem 1rem;
   color: var(--text-muted);
   font-size: 0.95rem;
-}
-/* Cursor y feedback en los jugadores de la lista */
-.modal-jugador-item {
-  cursor: pointer;
-  user-select: none;
-}
-
-.modal-jugador-item:active {
-  transform: scale(0.98);
 }
 
 /* Tarjeta de Ficha del Jugador (segundo modal) */
@@ -404,7 +415,7 @@ header p {
 /* Contenedor de la foto del jugador */
 .modal-cover {
   width: 100%;
-  height: 320px;
+  height: 300px;
   background: var(--bg-inner);
   position: relative;
   overflow: hidden;
@@ -472,6 +483,13 @@ header p {
   margin-bottom: 0.2rem;
 }
 
+.modal-sub-nacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
 .modal-sub {
   font-size: 0.9rem;
   color: var(--text-muted);
@@ -495,4 +513,202 @@ header p {
   font-size: 0.95rem;
   line-height: 1.6;
   color: #cbd5e1;
+}
+
+/* BANDERAS DE PAÍSES (CONSERVADAS) */
+.bandera-icon {
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.bandera-card {
+  width: 18px;
+  height: 12px;
+}
+
+.bandera-hero {
+  width: 20px;
+  height: 14px;
+}
+
+.bandera-icon-sm {
+  width: 16px;
+  height: 11px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.bandera-detalle {
+  width: 22px;
+  height: 15px;
+  border-radius: 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* BARRA DE BÚSQUEDA INTERACTIVA (HEADER) */
+.search-container {
+  max-width: 580px;
+  margin: 1.8rem auto 0 auto;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 0.35rem 1.15rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.search-icon {
+  font-size: 1.05rem;
+  margin-right: 0.75rem;
+  opacity: 0.65;
+  user-select: none;
+}
+
+.search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-title);
+  font-size: 0.95rem;
+  font-family: inherit;
+  padding: 0.5rem 0;
+}
+
+.search-input::placeholder {
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.search-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 0.35rem;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.search-clear-btn:hover {
+  color: var(--text-title);
+  transform: scale(1.15);
+}
+
+.search-counter {
+  margin-top: 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+/* Indicador de jugador coincidente en tarjeta */
+.equipo-card-match-badge {
+  margin-top: 0.85rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  display: inline-block;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Estado vacío de búsqueda */
+.empty-search-card {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: 20px;
+  grid-column: 1 / -1;
+}
+
+.empty-search-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.8;
+}
+
+.empty-search-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: var(--text-title);
+}
+
+.empty-search-card p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 1.25rem;
+}
+
+.btn-reset-search {
+  background: var(--accent);
+  color: #0c1017;
+  border: none;
+  padding: 0.55rem 1.3rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-reset-search:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+/* Filtro dentro del modal de plantel */
+.modal-plantel-filter-box {
+  margin-bottom: 1rem;
+}
+
+.modal-plantel-filter-input {
+  width: 100%;
+  background: var(--bg-inner);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  color: var(--text-title);
+  font-size: 0.85rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.modal-plantel-filter-input:focus {
+  border-color: var(--accent);
 }
