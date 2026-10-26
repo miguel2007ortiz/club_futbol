@@ -4,38 +4,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Club de Fútbol | Panel Oficial de Equipos</title>
+  <title>Club de Fútbol | Panel Oficial de Equipos & Clubes</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=6">
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=12">
 </head>
 <body>
+
+  <!-- BARRA DE NOTICIAS DEPORTIVAS (SPORTS TICKER) -->
+  <div class="sports-ticker-bar">
+    <div class="sports-ticker-label">
+      <span class="ticker-pulse"></span> EN VIVO
+    </div>
+    <div class="sports-ticker-track">
+      <div class="sports-ticker-content">
+        <span>⚽ TEMPORADA OFICIAL 2026/27</span>
+        <span class="ticker-dot">•</span>
+        <span>🏟️ {{ equipos|length }} CLUBES EN COMPETICIÓN</span>
+        <span class="ticker-dot">•</span>
+        <span>🌍 {{ total_paises }} NACIONES REGISTRADAS</span>
+        <span class="ticker-dot">•</span>
+        <span>👥 {{ total_jugadores }} FUTBOLISTAS INSCRITOS</span>
+        <span class="ticker-dot">•</span>
+        <span>⚡ MERCADO DE FICHAJES ABIERTO</span>
+        <span class="ticker-dot">•</span>
+        <span>🏆 PANEL OFICIAL DE GESTIÓN DEPORTIVA</span>
+        <span class="ticker-dot">•</span>
+        <!-- Duplicado para bucle continuo -->
+        <span>⚽ TEMPORADA OFICIAL 2026/27</span>
+        <span class="ticker-dot">•</span>
+        <span>🏟️ {{ equipos|length }} CLUBES EN COMPETICIÓN</span>
+        <span class="ticker-dot">•</span>
+        <span>🌍 {{ total_paises }} NACIONES REGISTRADAS</span>
+        <span class="ticker-dot">•</span>
+        <span>👥 {{ total_jugadores }} FUTBOLISTAS INSCRITOS</span>
+        <span class="ticker-dot">•</span>
+        <span>⚡ MERCADO DE FICHAJES ABIERTO</span>
+        <span class="ticker-dot">•</span>
+        <span>🏆 PANEL OFICIAL DE GESTIÓN DEPORTIVA</span>
+        <span class="ticker-dot">•</span>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <header>
       <div class="header-badge">⚽ GESTIÓN DEPORTIVA & PLANTELES</div>
-      <h1>Clubes & Planteles</h1>
-      <p>Explora nóminas oficiales, busca futbolistas en tiempo real y gestiona tus clubes favoritos.</p>
+      <h1 id="headerMainTitle">Clubes & Planteles</h1>
+      <p id="headerMainSubtitle">Explora nóminas oficiales, busca futbolistas en tiempo real y gestiona tus clubes y países favoritos.</p>
 
-      <!-- BARRA DE ESTADÍSTICAS RÁPIDAS -->
+      <!-- BARRA DE ESTADÍSTICAS RÁPIDAS (ENLACES INTERACTIVOS CLUBES / JUGADORES / PAÍSES) -->
       <div class="stats-bar">
-        <div class="stat-pill">
+        <a href="{% url 'lista_equipos' %}" class="stat-pill stat-tab active" id="tabClubes" title="Estás en la selección de clubes">
           <span>🏟️</span>
           <span><strong>{{ equipos|length }}</strong> Clubes</span>
-        </div>
+        </a>
+        
         <span class="stat-divider"></span>
-        <div class="stat-pill">
+        
+        <a href="{% url 'lista_jugadores' %}" class="stat-pill stat-tab" id="tabJugadores" title="Ver catálogo de futbolistas">
           <span>👥</span>
           <span><strong>{{ total_jugadores }}</strong> Jugadores</span>
-        </div>
+        </a>
+        
         <span class="stat-divider"></span>
-        <div class="stat-pill">
+        
+        <a href="{% url 'lista_paises' %}" class="stat-pill stat-tab" id="tabPaises" title="Ir a la selección de países">
           <span>🌍</span>
           <span><strong>{{ total_paises }}</strong> Países</span>
-        </div>
+        </a>
       </div>
 
       {% if messages %}
@@ -81,111 +121,147 @@
       </div>
     </header>
 
-    <!-- GRILLA PRINCIPAL DE EQUIPOS -->
-    <div class="grid-equipos" id="gridEquipos">
-      {% for equipo in equipos %}
-        <div class="equipo-card" 
-             data-nombre="{{ equipo.nombre }}"
-             data-pais="{{ equipo.pais.nombre|default:equipo.pais }}"
-             data-pais-bandera="{% if equipo.pais and equipo.pais.imagen %}{{ equipo.pais.imagen.url }}{% endif %}"
-             data-ciudad="{{ equipo.ciudad }}"
-             data-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}"
-             data-total-jugadores="{{ equipo.jugadores.all|length }}"
-             data-jugadores="{% for jugador in equipo.jugadores.all %}{{ jugador.nombre }} ({{ jugador.posicion }})|{% endfor %}"
-             tabindex="0"
-             role="button"
-             aria-label="Abrir plantilla de {{ equipo.nombre }}">
-          
-          <div class="equipo-header-main">
-            <!-- Escudo circular con halo luminoso -->
-            <div class="escudo-wrapper-main">
-              {% if equipo.imagen %}
-                <img src="{{ equipo.imagen.url }}" alt="Escudo de {{ equipo.nombre }}" class="escudo-img-main">
-              {% else %}
-                <div class="escudo-placeholder-main">{{ equipo.nombre|slice:":1" }}</div>
-              {% endif %}
+    <!-- ========================================== -->
+    <!-- VISTA DE CLUBES                            -->
+    <!-- ========================================== -->
+    <section id="viewClubes" class="view-section active">
+      <div class="grid-equipos" id="gridEquipos">
+        {% for equipo in equipos %}
+          <div class="equipo-card" 
+               data-nombre="{{ equipo.nombre }}"
+               data-pais="{{ equipo.pais.nombre|default:equipo.pais }}"
+               data-pais-bandera="{% if equipo.pais and equipo.pais.imagen %}{{ equipo.pais.imagen.url }}{% endif %}"
+               data-ciudad="{{ equipo.ciudad }}"
+               data-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}"
+               data-total-jugadores="{{ equipo.jugadores.all|length }}"
+               data-jugadores="{% for jugador in equipo.jugadores.all %}{{ jugador.nombre }} ({{ jugador.posicion }})|{% endfor %}"
+               tabindex="0"
+               role="button"
+               aria-label="Abrir plantilla de {{ equipo.nombre }}">
+            
+            <!-- Brillo holográfico cromo y cinta de esquina -->
+            <div class="card-shine" aria-hidden="true"></div>
+            <div class="corner-ribbon-wrapper">
+              <div class="corner-ribbon ribbon-club">OFICIAL</div>
             </div>
             
-            <h2>{{ equipo.nombre }}</h2>
-            
-            <div class="equipo-ubicacion">
-              {% if equipo.pais and equipo.pais.imagen %}
-                <img src="{{ equipo.pais.imagen.url }}" alt="{{ equipo.pais.nombre }}" class="bandera-icon bandera-card" width="19" height="13" title="{{ equipo.pais.nombre }}">
-              {% else %}
-                <span class="ubicacion-pin">📍</span>
-              {% endif %}
-              <span>{{ equipo.ciudad }}{% if equipo.pais %}, {{ equipo.pais.nombre }}{% endif %}</span>
-            </div>
-            
-            <span class="badge-plantel-conteo">👥 {{ equipo.jugadores.all|length }} jugadores</span>
-            
-            <div class="equipo-card-match-badge" style="display: none;"></div>
-            
-            <div class="equipo-card-footer">
-              <span>Ver plantilla</span>
-              <span aria-hidden="true">→</span>
-            </div>
-          </div>
-
-          <!-- DATOS OCULTOS DE LOS JUGADORES (TEMPLATE) -->
-          <template class="datos-jugadores">
-            {% for jugador in equipo.jugadores.all %}
-              <div class="modal-jugador-item"
-                   data-nombre="{{ jugador.nombre }}"
-                   data-posicion="{{ jugador.posicion }}"
-                   data-pais="{{ jugador.pais_nacimiento.nombre|default:jugador.pais_nacimiento }}"
-                   data-pais-bandera="{% if jugador.pais_nacimiento and jugador.pais_nacimiento.imagen %}{{ jugador.pais_nacimiento.imagen.url }}{% endif %}"
-                   data-descripcion="{{ jugador.descripcion|default:'Sin descripción disponible.' }}"
-                   data-imagen="{% if jugador.imagen %}{{ jugador.imagen.url }}{% endif %}"
-                   data-equipo-nombre="{{ equipo.nombre }}"
-                   data-equipo-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}">
-                
-                {% if jugador.imagen %}
-                  <img src="{{ jugador.imagen.url }}" alt="{{ jugador.nombre }}" class="modal-jugador-foto">
+            <div class="equipo-header-main">
+              <!-- Escudo circular con halo luminoso -->
+              <div class="escudo-wrapper-main">
+                {% if equipo.imagen %}
+                  <img src="{{ equipo.imagen.url }}" alt="Escudo de {{ equipo.nombre }}" class="escudo-img-main">
                 {% else %}
-                  <div class="modal-jugador-foto modal-jugador-placeholder">⚽</div>
+                  <div class="escudo-placeholder-main">{{ equipo.nombre|slice:":1" }}</div>
                 {% endif %}
-
-                <div class="modal-jugador-info">
-                  <div class="modal-jugador-nombre">{{ jugador.nombre }}</div>
-                  <div class="modal-jugador-nacion">
-                    {% if jugador.pais_nacimiento and jugador.pais_nacimiento.imagen %}
-                      <img src="{{ jugador.pais_nacimiento.imagen.url }}" alt="{{ jugador.pais_nacimiento.nombre }}" class="bandera-icon-sm" width="17" height="12" title="{{ jugador.pais_nacimiento.nombre }}">
-                    {% else %}
-                      <span>📍</span>
-                    {% endif %}
-                    <span>{{ jugador.pais_nacimiento.nombre|default:jugador.pais_nacimiento }}</span>
-                  </div>
-                </div>
-
-                <span class="badge-posicion">{{ jugador.posicion }}</span>
-                <span class="modal-jugador-arrow" aria-hidden="true">›</span>
               </div>
-            {% empty %}
-              <div class="empty-state-modal">Este equipo aún no tiene jugadores inscritos.</div>
-            {% endfor %}
-          </template>
+              
+              <h2>{{ equipo.nombre }}</h2>
+              
+              <div class="equipo-ubicacion" data-tooltip="{{ equipo.ciudad }}{% if equipo.pais %}, {{ equipo.pais.nombre }}{% endif %}">
+                {% if equipo.pais and equipo.pais.imagen %}
+                  <img src="{{ equipo.pais.imagen.url }}" alt="{{ equipo.pais.nombre }}" class="bandera-icon bandera-card" width="19" height="13" data-tooltip="País: {{ equipo.pais.nombre }}">
+                {% else %}
+                  <span class="ubicacion-pin">📍</span>
+                {% endif %}
+                <span>{{ equipo.ciudad }}{% if equipo.pais %}, {{ equipo.pais.nombre }}{% endif %}</span>
+              </div>
+              
+              <span class="badge-plantel-conteo">👥 {{ equipo.jugadores.all|length }} jugadores</span>
+              
+              <div class="equipo-card-match-badge" style="display: none;"></div>
+              
+              <div class="equipo-card-footer">
+                <span>Ver plantilla</span>
+                <span aria-hidden="true">→</span>
+              </div>
+            </div>
 
-        </div>
-      {% empty %}
-        <div class="empty-state" style="grid-column: 1 / -1;">
-          <h2>No se encontraron equipos registrados</h2>
-          <p>Registra tus primeros clubes pulsando en "Nuevo Club".</p>
-        </div>
-      {% endfor %}
+            <!-- DATOS OCULTOS DE LOS JUGADORES DEL EQUIPO (TEMPLATE) -->
+            <template class="datos-jugadores">
+              {% for jugador in equipo.jugadores.all %}
+                <div class="modal-jugador-item"
+                     data-nombre="{{ jugador.nombre }}"
+                     data-posicion="{{ jugador.posicion }}"
+                     data-pais="{{ jugador.pais_nacimiento.nombre|default:jugador.pais_nacimiento }}"
+                     data-pais-bandera="{% if jugador.pais_nacimiento and jugador.pais_nacimiento.imagen %}{{ jugador.pais_nacimiento.imagen.url }}{% endif %}"
+                     data-descripcion="{{ jugador.descripcion|default:'Sin descripción disponible.' }}"
+                     data-imagen="{% if jugador.imagen %}{{ jugador.imagen.url }}{% endif %}"
+                     data-equipo-nombre="{{ equipo.nombre }}"
+                     data-equipo-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}">
+                  
+                  {% if jugador.imagen %}
+                    <img src="{{ jugador.imagen.url }}" alt="{{ jugador.nombre }}" class="modal-jugador-foto">
+                  {% else %}
+                    <div class="modal-jugador-foto modal-jugador-placeholder">⚽</div>
+                  {% endif %}
 
-      <!-- ESTADO VACÍO DE BÚSQUEDA -->
-      <div id="noSearchResults" class="empty-search-card" style="display: none;">
-        <div class="empty-search-icon">🔎</div>
-        <h3>No se encontraron resultados</h3>
-        <p id="noSearchText">No hay clubes ni futbolistas que coincidan con tu búsqueda.</p>
-        <button id="resetSearchBtn" class="btn-reset-search">Restablecer búsqueda</button>
+                  <div class="modal-jugador-info">
+                    <div class="modal-jugador-nombre">{{ jugador.nombre }}</div>
+                    <div class="modal-jugador-nacion">
+                      {% if jugador.pais_nacimiento and jugador.pais_nacimiento.imagen %}
+                        <img src="{{ jugador.pais_nacimiento.imagen.url }}" alt="{{ jugador.pais_nacimiento.nombre }}" class="bandera-icon-sm" width="17" height="12" title="{{ jugador.pais_nacimiento.nombre }}">
+                      {% else %}
+                        <span>📍</span>
+                      {% endif %}
+                      <span>{{ jugador.pais_nacimiento.nombre|default:jugador.pais_nacimiento }}</span>
+                    </div>
+                  </div>
+
+                  <span class="badge-posicion">{{ jugador.posicion }}</span>
+                  <span class="modal-jugador-arrow" aria-hidden="true">›</span>
+                </div>
+              {% empty %}
+                <div class="empty-state-modal">Este equipo aún no tiene jugadores inscritos.</div>
+              {% endfor %}
+            </template>
+
+          </div>
+        {% empty %}
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <h2>No se encontraron equipos registrados</h2>
+            <p>Registra tus primeros clubes pulsando en "Nuevo Club".</p>
+          </div>
+        {% endfor %}
       </div>
+    </section>
 
+    <!-- ESTADO VACÍO DE BÚSQUEDA -->
+    <div id="noSearchResults" class="empty-search-card" style="display: none; margin-top: 2rem;">
+      <div class="empty-search-icon">🔎</div>
+      <h3>No se encontraron resultados</h3>
+      <p id="noSearchText">No hay resultados que coincidan con tu búsqueda.</p>
+      <button id="resetSearchBtn" class="btn-reset-search">Restablecer búsqueda</button>
     </div>
+
   </div>
 
-  <!-- 1. MODAL DEL EQUIPO (LISTA DE JUGADORES) -->
+  <!-- FOOTER TEMÁTICO DE ESTADIO CON REFLECTORES -->
+  <footer class="stadium-footer">
+    <div class="stadium-lights-glow"></div>
+    <div class="stadium-footer-content">
+      <div class="footer-badge">⚽ CLUB DE FÚTBOL • GESTIÓN DEPORTIVA</div>
+      <div class="stadium-footer-brand">
+        <h3>Panel Oficial de Clubes & Selecciones</h3>
+        <p>Plataforma deportiva de gestión y visualización de plantillas oficiales, fichas técnicas y nóminas internacionales.</p>
+      </div>
+
+      <div class="stadium-footer-nav">
+        <a href="{% url 'lista_equipos' %}">🏟️ Clubes</a>
+        <span class="footer-nav-dot">•</span>
+        <a href="{% url 'lista_jugadores' %}">👥 Futbolistas</a>
+        <span class="footer-nav-dot">•</span>
+        <a href="{% url 'lista_paises' %}">🌍 Países</a>
+      </div>
+
+      <div class="stadium-footer-copy">
+        <span>© 2026 Club de Fútbol Oficial. Desarrollado con tecnología moderna.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- MODAL 1: PLANTILLA DEL CLUB (EQUIPO)       -->
+  <!-- ========================================== -->
   <div id="modalEquipoOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalHeroNombre">
     <div class="modal-equipo-card">
       <button id="modalEquipoClose" class="modal-close" aria-label="Cerrar modal">&times;</button>
@@ -204,7 +280,20 @@
         </div>
       </div>
 
-      <div class="modal-plantel-wrapper">
+      <!-- SELECTOR DE VISTA DEL MODAL (LISTA VS PIZARRA TÁCTICA) -->
+      <div class="modal-view-switcher">
+        <button type="button" class="modal-switch-btn active" id="btnVerPlantelLista">
+          <span>📋</span>
+          <span>Plantilla Oficial</span>
+        </button>
+        <button type="button" class="modal-switch-btn" id="btnVerPizarraTactico">
+          <span>⚽</span>
+          <span>Pizarra Táctica</span>
+        </button>
+      </div>
+
+      <!-- VISTA 1: PLANTILLA EN LISTA -->
+      <div id="modalPlantelWrapper" class="modal-plantel-wrapper">
         <div class="modal-plantel-header">
           <h3>Plantilla Oficial</h3>
           <span id="modalPlantelBadge" class="modal-plantel-badge">0 Jugadores</span>
@@ -222,13 +311,64 @@
           <!-- Inyectado por JavaScript -->
         </div>
       </div>
+
+      <!-- VISTA 2: PIZARRA TÁCTICA (CANCHA DE FÚTBOL) -->
+      <div id="modalCanchaWrapper" class="modal-cancha-wrapper" style="display: none;">
+        <div class="cancha-tactica-header">
+          <h3><span>⚽</span> Alineación Táctica</h3>
+          <span id="modalCanchaBadge" class="cancha-tactica-badge">0 en Cancha</span>
+        </div>
+
+        <!-- Terreno de Juego Verde Césped -->
+        <div class="cancha-terreno">
+          <!-- Líneas de campo reglamentarias -->
+          <div class="cancha-linea-medio"></div>
+          <div class="cancha-circulo-central"></div>
+          <div class="cancha-punto-central"></div>
+          <div class="cancha-area-top"></div>
+          <div class="cancha-area-bottom"></div>
+
+          <!-- Línea 1: Delanteros (Ataque) -->
+          <div id="canchaLineaDelantera" class="cancha-linea-tactica" title="Línea de Ataque">
+            <!-- Fichas inyectadas por JS -->
+          </div>
+
+          <!-- Línea 2: Mediocampistas (Creación) -->
+          <div id="canchaLineaMedio" class="cancha-linea-tactica" title="Línea de Mediocampo">
+            <!-- Fichas inyectadas por JS -->
+          </div>
+
+          <!-- Línea 3: Defensores (Zaga) -->
+          <div id="canchaLineaDefensa" class="cancha-linea-tactica" title="Línea de Defensa">
+            <!-- Fichas inyectadas por JS -->
+          </div>
+
+          <!-- Línea 4: Guardameta (Portería) -->
+          <div id="canchaLineaPortero" class="cancha-linea-tactica" title="Portería">
+            <!-- Fichas inyectadas por JS -->
+          </div>
+        </div>
+
+        <!-- Suplentes / Banca de Reserva -->
+        <div id="canchaBancaWrapper" class="cancha-banca-box" style="display: none;">
+          <div class="cancha-banca-title">
+            <span>🪑</span>
+            <span>Banca de Suplentes / Reserva</span>
+          </div>
+          <div id="canchaBancaLista" class="cancha-banca-lista">
+            <!-- Fichas de suplentes inyectadas por JS -->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 2. MODAL DE FICHA DEL JUGADOR -->
+  <!-- ========================================== -->
+  <!-- MODAL 2: FICHA DEL JUGADOR                 -->
+  <!-- ========================================== -->
   <div id="modalJugadorOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="detalleNombre">
     <div class="modal-jugador-detalle-card">
-      <button id="modalJugadorVolver" class="modal-back-btn" aria-label="Volver a la plantilla">← Volver al plantel</button>
+      <button id="modalJugadorVolver" class="modal-back-btn" aria-label="Volver">← Volver al club</button>
       <button id="modalJugadorClose" class="modal-close" aria-label="Cerrar ficha">&times;</button>
       
       <div class="modal-cover">
@@ -259,9 +399,8 @@
     </div>
   </div>
 
-  <!-- SCRIPT DE NAVEGACIÓN Y BÚSQUEDA INTERACTIVA -->
+  <!-- SCRIPT DE BÚSQUEDA Y MODALES DE CLUBES -->
   <script>
-    // Utilidad para normalizar texto (elimina tildes, mayúsculas y diacríticos)
     function normalizar(texto) {
       return (texto || '')
         .toString()
@@ -271,7 +410,6 @@
         .trim();
     }
 
-    // Clasificador visual de posiciones de fútbol
     function obtenerClasePosicion(posicion) {
       const p = normalizar(posicion);
       if (p.includes('portero') || p.includes('arquero')) return 'pos-portero';
@@ -280,7 +418,7 @@
       return 'pos-medio';
     }
 
-    // Referencias Buscador Principal
+    // Buscador
     const inputBuscador = document.getElementById('buscadorClubes');
     const searchClearBtn = document.getElementById('searchClearBtn');
     const searchCounter = document.getElementById('searchCounter');
@@ -288,9 +426,8 @@
     const noSearchText = document.getElementById('noSearchText');
     const resetSearchBtn = document.getElementById('resetSearchBtn');
     const equipoCards = document.querySelectorAll('.equipo-card');
-    const totalEquipos = equipoCards.length;
 
-    // Referencias Modal Equipo
+    // Modal Equipo
     const equipoOverlay = document.getElementById('modalEquipoOverlay');
     const equipoClose = document.getElementById('modalEquipoClose');
     const heroImg = document.getElementById('modalHeroImg');
@@ -302,7 +439,199 @@
     const plantelBadge = document.getElementById('modalPlantelBadge');
     const modalPlantelFilter = document.getElementById('modalPlantelFilter');
 
-    // Referencias Modal Ficha Jugador
+    // Switcher y Pizarra Táctica en el Modal
+    const btnVerPlantelLista = document.getElementById('btnVerPlantelLista');
+    const btnVerPizarraTactico = document.getElementById('btnVerPizarraTactico');
+    const modalPlantelWrapper = document.getElementById('modalPlantelWrapper');
+    const modalCanchaWrapper = document.getElementById('modalCanchaWrapper');
+    const modalCanchaBadge = document.getElementById('modalCanchaBadge');
+
+    const canchaLineaDelantera = document.getElementById('canchaLineaDelantera');
+    const canchaLineaMedio = document.getElementById('canchaLineaMedio');
+    const canchaLineaDefensa = document.getElementById('canchaLineaDefensa');
+    const canchaLineaPortero = document.getElementById('canchaLineaPortero');
+    const canchaBancaWrapper = document.getElementById('canchaBancaWrapper');
+    const canchaBancaLista = document.getElementById('canchaBancaLista');
+
+    function alternarVistaModal(vista) {
+      if (vista === 'tactico') {
+        btnVerPizarraTactico.classList.add('active');
+        btnVerPlantelLista.classList.remove('active');
+        modalCanchaWrapper.style.display = 'flex';
+        modalPlantelWrapper.style.display = 'none';
+      } else {
+        btnVerPlantelLista.classList.add('active');
+        btnVerPizarraTactico.classList.remove('active');
+        modalPlantelWrapper.style.display = 'block';
+        modalCanchaWrapper.style.display = 'none';
+      }
+    }
+
+    btnVerPlantelLista.addEventListener('click', () => alternarVistaModal('lista'));
+    btnVerPizarraTactico.addEventListener('click', () => alternarVistaModal('tactico'));
+
+    function crearFichaTactico(jugadorItem) {
+      const ficha = document.createElement('div');
+      const posClase = obtenerClasePosicion(jugadorItem.dataset.posicion);
+      ficha.className = `ficha-tactica ${posClase}`;
+      ficha.tabIndex = 0;
+      ficha.role = 'button';
+      ficha.title = `${jugadorItem.dataset.nombre} - ${jugadorItem.dataset.posicion}`;
+
+      const avatarBox = document.createElement('div');
+      avatarBox.className = 'ficha-avatar';
+
+      const fotoUrl = jugadorItem.dataset.imagen;
+      if (fotoUrl) {
+        const img = document.createElement('img');
+        img.src = fotoUrl;
+        img.alt = jugadorItem.dataset.nombre;
+        avatarBox.appendChild(img);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'ficha-avatar-placeholder';
+        ph.textContent = '⚽';
+        avatarBox.appendChild(ph);
+      }
+
+      const infoBox = document.createElement('div');
+      infoBox.className = 'ficha-info';
+
+      const nombre = document.createElement('span');
+      nombre.className = 'ficha-nombre';
+      nombre.textContent = jugadorItem.dataset.nombre;
+
+      const posTag = document.createElement('span');
+      posTag.className = 'ficha-pos-tag';
+      let acronimo = 'JUG';
+      if (posClase === 'pos-portero') acronimo = 'POR';
+      else if (posClase === 'pos-defensa') acronimo = 'DEF';
+      else if (posClase === 'pos-medio') acronimo = 'MED';
+      else if (posClase === 'pos-delantero') acronimo = 'DEL';
+      posTag.textContent = acronimo;
+
+      infoBox.appendChild(nombre);
+      infoBox.appendChild(posTag);
+
+      ficha.appendChild(avatarBox);
+      ficha.appendChild(infoBox);
+
+      ficha.addEventListener('click', () => {
+        abrirFichaJugador(jugadorItem);
+      });
+      ficha.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          abrirFichaJugador(jugadorItem);
+        }
+      });
+
+      return ficha;
+    }
+
+    function renderizarPizarraTactico(items) {
+      canchaLineaDelantera.innerHTML = '';
+      canchaLineaMedio.innerHTML = '';
+      canchaLineaDefensa.innerHTML = '';
+      canchaLineaPortero.innerHTML = '';
+      canchaBancaLista.innerHTML = '';
+
+      if (!items || items.length === 0) {
+        canchaLineaDelantera.innerHTML = '<span class="cancha-empty-line">Sin atacantes registrados</span>';
+        canchaLineaMedio.innerHTML = '<span class="cancha-empty-line">Sin mediocampistas registrados</span>';
+        canchaLineaDefensa.innerHTML = '<span class="cancha-empty-line">Sin defensores registrados</span>';
+        canchaLineaPortero.innerHTML = '<span class="cancha-empty-line">Sin arquero registrado</span>';
+        modalCanchaBadge.textContent = '0 en Cancha';
+        canchaBancaWrapper.style.display = 'none';
+        return;
+      }
+
+      const porteros = [];
+      const defensas = [];
+      const medios = [];
+      const delanteros = [];
+
+      items.forEach(item => {
+        const clasePos = obtenerClasePosicion(item.dataset.posicion);
+        if (clasePos === 'pos-portero') porteros.push(item);
+        else if (clasePos === 'pos-defensa') defensas.push(item);
+        else if (clasePos === 'pos-medio') medios.push(item);
+        else if (clasePos === 'pos-delantero') delanteros.push(item);
+        else medios.push(item);
+      });
+
+      const limitePorteros = 1;
+      const limiteDefensas = 4;
+      const limiteMedios = 4;
+      const limiteDelanteros = 3;
+
+      let enCanchaCount = 0;
+      let bancaCount = 0;
+
+      // 1. Delanteros (Línea de Ataque)
+      const delCancha = delanteros.slice(0, limiteDelanteros);
+      const delBanca = delanteros.slice(limiteDelanteros);
+      if (delCancha.length > 0) {
+        delCancha.forEach(it => {
+          canchaLineaDelantera.appendChild(crearFichaTactico(it));
+          enCanchaCount++;
+        });
+      } else {
+        canchaLineaDelantera.innerHTML = '<span class="cancha-empty-line">Sin delanteros</span>';
+      }
+
+      // 2. Mediocampistas (Línea de Creación)
+      const medCancha = medios.slice(0, limiteMedios);
+      const medBanca = medios.slice(limiteMedios);
+      if (medCancha.length > 0) {
+        medCancha.forEach(it => {
+          canchaLineaMedio.appendChild(crearFichaTactico(it));
+          enCanchaCount++;
+        });
+      } else {
+        canchaLineaMedio.innerHTML = '<span class="cancha-empty-line">Sin mediocampistas</span>';
+      }
+
+      // 3. Defensas (Línea de Retaguardia)
+      const defCancha = defensas.slice(0, limiteDefensas);
+      const defBanca = defensas.slice(limiteDefensas);
+      if (defCancha.length > 0) {
+        defCancha.forEach(it => {
+          canchaLineaDefensa.appendChild(crearFichaTactico(it));
+          enCanchaCount++;
+        });
+      } else {
+        canchaLineaDefensa.innerHTML = '<span class="cancha-empty-line">Sin defensores</span>';
+      }
+
+      // 4. Portero
+      const porCancha = porteros.slice(0, limitePorteros);
+      const porBanca = porteros.slice(limitePorteros);
+      if (porCancha.length > 0) {
+        porCancha.forEach(it => {
+          canchaLineaPortero.appendChild(crearFichaTactico(it));
+          enCanchaCount++;
+        });
+      } else {
+        canchaLineaPortero.innerHTML = '<span class="cancha-empty-line">Sin arquero</span>';
+      }
+
+      // 5. Banquillo de Suplentes
+      const totalBanca = [...porBanca, ...defBanca, ...medBanca, ...delBanca];
+      if (totalBanca.length > 0) {
+        totalBanca.forEach(it => {
+          canchaBancaLista.appendChild(crearFichaTactico(it));
+          bancaCount++;
+        });
+        canchaBancaWrapper.style.display = 'flex';
+      } else {
+        canchaBancaWrapper.style.display = 'none';
+      }
+
+      modalCanchaBadge.textContent = `${enCanchaCount} en Cancha${bancaCount > 0 ? ` (+${bancaCount} banca)` : ''}`;
+    }
+
+    // Modal Jugador
     const jugadorOverlay = document.getElementById('modalJugadorOverlay');
     const jugadorClose = document.getElementById('modalJugadorClose');
     const jugadorVolver = document.getElementById('modalJugadorVolver');
@@ -316,12 +645,11 @@
     const detPais = document.getElementById('detallePais');
     const detDesc = document.getElementById('detalleDescripcion');
 
-    // ==========================================
-    // 1. BÚSQUEDA INTERACTIVA EN TIEMPO REAL
-    // ==========================================
+    // Búsqueda en tiempo real de clubes
     function ejecutarBusqueda() {
       const terminoOriginal = inputBuscador.value.trim();
       const termino = normalizar(terminoOriginal);
+      const totalCards = equipoCards.length;
 
       if (!termino) {
         searchClearBtn.style.display = 'none';
@@ -349,16 +677,15 @@
         const jugadoresRaw = card.dataset.jugadores || '';
         const jugadores = normalizar(jugadoresRaw);
 
-        const coincideEquipo = nombre.includes(termino) || ciudad.includes(termino) || pais.includes(termino);
         const coincideJugadores = jugadores.includes(termino);
+        const coincide = nombre.includes(termino) || ciudad.includes(termino) || pais.includes(termino) || coincideJugadores;
         const matchBadge = card.querySelector('.equipo-card-match-badge');
 
-        if (coincideEquipo || coincideJugadores) {
+        if (coincide) {
           card.style.display = '';
           visibles++;
 
-          // Si coincide por jugador, mostrar etiqueta con el nombre del jugador
-          if (coincideJugadores && !coincideEquipo && matchBadge) {
+          if (coincideJugadores && !nombre.includes(termino) && matchBadge) {
             const listaJugadores = jugadoresRaw.split('|').filter(Boolean);
             const jugadorEncontrado = listaJugadores.find(j => normalizar(j).includes(termino));
             if (jugadorEncontrado) {
@@ -376,14 +703,13 @@
         }
       });
 
-      // Actualizar contador y estado vacío
       if (visibles > 0) {
         noSearchResults.style.display = 'none';
-        searchCounter.textContent = `⚡ Mostrando ${visibles} de ${totalEquipos} clubes`;
+        searchCounter.textContent = `⚡ Mostrando ${visibles} de ${totalCards} clubes`;
         searchCounter.style.display = 'block';
       } else {
         noSearchResults.style.display = 'block';
-        noSearchText.textContent = `No hay clubes ni futbolistas que coincidan con "${terminoOriginal}".`;
+        noSearchText.textContent = `No hay clubes que coincidan con "${terminoOriginal}".`;
         searchCounter.textContent = `0 resultados encontrados`;
         searchCounter.style.display = 'block';
       }
@@ -400,9 +726,7 @@
     searchClearBtn.addEventListener('click', limpiarBusqueda);
     resetSearchBtn.addEventListener('click', limpiarBusqueda);
 
-    // ==========================================
-    // 2. ABRIR MODAL DE EQUIPO
-    // ==========================================
+    // Modal de Equipo
     function abrirModalEquipo(card) {
       heroNombre.textContent = card.dataset.nombre;
       
@@ -441,19 +765,19 @@
       const totalCount = items.length || parseInt(card.dataset.totalJugadores || '0', 10);
       plantelBadge.textContent = `${totalCount} Jugadores`;
 
-      // Aplicar clases de posición dinámica a los badges
       items.forEach(jugadorItem => {
         const badge = jugadorItem.querySelector('.badge-posicion');
         if (badge) {
-          const clasePos = obtenerClasePosicion(jugadorItem.dataset.posicion);
-          badge.classList.add(clasePos);
+          badge.classList.add(obtenerClasePosicion(jugadorItem.dataset.posicion));
         }
-        jugadorItem.addEventListener('click', () => abrirFichaJugador(jugadorItem));
+        jugadorItem.addEventListener('click', () => {
+          abrirFichaJugador(jugadorItem);
+        });
       });
 
-      // Limpiar filtro interno del modal de plantel
       modalPlantelFilter.value = '';
-
+      renderizarPizarraTactico(items);
+      alternarVistaModal('lista');
       equipoOverlay.classList.add('active');
     }
 
@@ -467,7 +791,7 @@
       });
     });
 
-    // Filtro rápido dentro del modal del plantel
+    // Filtro rápido dentro del modal del club
     modalPlantelFilter.addEventListener('input', () => {
       const q = normalizar(modalPlantelFilter.value);
       const items = contenedorJugadores.querySelectorAll('.modal-jugador-item');
@@ -486,14 +810,10 @@
       plantelBadge.textContent = `${count} de ${items.length} Jugadores`;
     });
 
-    // ==========================================
-    // 3. ABRIR MODAL DE FICHA DEL JUGADOR
-    // ==========================================
+    // Abrir Ficha del Jugador
     function abrirFichaJugador(item) {
       detNombre.textContent = item.dataset.nombre;
       detPos.textContent = item.dataset.posicion;
-      
-      // Aplicar color de posición a la ficha
       detPos.className = 'badge-posicion ' + obtenerClasePosicion(item.dataset.posicion);
 
       detDesc.textContent = item.dataset.descripcion;
@@ -528,12 +848,11 @@
         detPlaceholder.style.display = 'flex';
       }
 
+      jugadorVolver.textContent = '← Volver al club';
       jugadorOverlay.classList.add('active');
     }
 
-    // ==========================================
-    // 4. FUNCIONES DE CIERRE Y ACCESIBILIDAD
-    // ==========================================
+    // Cierres y modales
     equipoClose.addEventListener('click', () => equipoOverlay.classList.remove('active'));
     jugadorVolver.addEventListener('click', () => jugadorOverlay.classList.remove('active'));
     jugadorClose.addEventListener('click', () => jugadorOverlay.classList.remove('active'));
@@ -545,9 +864,11 @@
       if (e.target === jugadorOverlay) jugadorOverlay.classList.remove('active');
     });
 
-    // Atajos de teclado: '/' enfoca el buscador; ESC cierra modales o limpia el buscador
+    // Atajos de teclado
     document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== inputBuscador && !equipoOverlay.classList.contains('active') && !jugadorOverlay.classList.contains('active')) {
+      const algunModalActivo = equipoOverlay.classList.contains('active') || jugadorOverlay.classList.contains('active');
+
+      if (e.key === '/' && document.activeElement !== inputBuscador && !algunModalActivo) {
         e.preventDefault();
         inputBuscador.focus();
         inputBuscador.select();

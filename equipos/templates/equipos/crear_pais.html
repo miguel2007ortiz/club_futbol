@@ -28,6 +28,13 @@
                 {% endfor %}
             {% endif %}
 
+            {% if form.errors %}
+                <div class="alert-danger">
+                    <span>⚠️</span>
+                    <span>No se pudo guardar: Por favor corrige los errores señalados abajo.</span>
+                </div>
+            {% endif %}
+
             <form method="post" enctype="multipart/form-data" class="team-form">
                 {% csrf_token %}
 

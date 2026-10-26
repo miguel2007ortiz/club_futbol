@@ -6,10 +6,38 @@ from .forms import FormsEquipo, FormsJugador, FormsPais
 
 def lista_equipos(request):
     equipos = Equipo.objects.select_related('pais').prefetch_related('jugadores__pais_nacimiento').all()
+    total_equipos = equipos.count()
     total_jugadores = Jugador.objects.count()
     total_paises = Pais.objects.count()
     return render(request, 'equipos/index.html', {
         'equipos': equipos,
+        'total_equipos': total_equipos,
+        'total_jugadores': total_jugadores,
+        'total_paises': total_paises,
+    })
+
+
+def lista_paises(request):
+    paises = Pais.objects.prefetch_related('jugadores__equipo').all()
+    total_equipos = Equipo.objects.count()
+    total_jugadores = Jugador.objects.count()
+    total_paises = paises.count()
+    return render(request, 'equipos/paises.html', {
+        'paises': paises,
+        'total_equipos': total_equipos,
+        'total_jugadores': total_jugadores,
+        'total_paises': total_paises,
+    })
+
+
+def lista_jugadores(request):
+    jugadores = Jugador.objects.select_related('equipo', 'pais_nacimiento').all()
+    total_equipos = Equipo.objects.count()
+    total_jugadores = jugadores.count()
+    total_paises = Pais.objects.count()
+    return render(request, 'equipos/jugadores.html', {
+        'jugadores': jugadores,
+        'total_equipos': total_equipos,
         'total_jugadores': total_jugadores,
         'total_paises': total_paises,
     })
