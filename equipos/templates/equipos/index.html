@@ -4,34 +4,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Club de Fútbol | Panel de Equipos</title>
+  <title>Club de Fútbol | Panel Oficial de Equipos</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=5">
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=6">
 </head>
 <body>
 
   <div class="container">
     <header>
+      <div class="header-badge">⚽ GESTIÓN DEPORTIVA & PLANTELES</div>
       <h1>Clubes & Planteles</h1>
-      <p>Selecciona un club para explorar su nómina de jugadores</p>
+      <p>Explora nóminas oficiales, busca futbolistas en tiempo real y gestiona tus clubes favoritos.</p>
 
-      <!-- BARRA DE BÚSQUEDA INTERACTIVA -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <span class="search-icon" aria-hidden="true">🔍</span>
-          <input type="text" 
-                 id="buscadorClubes" 
-                 class="search-input" 
-                 placeholder="Buscar por club, jugador, país o ciudad... (Presiona '/' para buscar)" 
-                 autocomplete="off" 
-                 spellcheck="false">
-          <button id="searchClearBtn" class="search-clear-btn" aria-label="Limpiar búsqueda" style="display: none;">&times;</button>
+      <!-- BARRA DE ESTADÍSTICAS RÁPIDAS -->
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span>🏟️</span>
+          <span><strong>{{ equipos|length }}</strong> Clubes</span>
         </div>
-        <div id="searchCounter" class="search-counter" style="display: none;"></div>
+        <span class="stat-divider"></span>
+        <div class="stat-pill">
+          <span>👥</span>
+          <span><strong>{{ total_jugadores }}</strong> Jugadores</span>
+        </div>
+        <span class="stat-divider"></span>
+        <div class="stat-pill">
+          <span>🌍</span>
+          <span><strong>{{ total_paises }}</strong> Países</span>
+        </div>
+      </div>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert-success">
+            <span>✓</span>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- TOOLBAR UNIFICADA (BUSCADOR + ACCIONES DE CREACIÓN) -->
+      <div class="toolbar">
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="text" 
+                   id="buscadorClubes" 
+                   class="search-input" 
+                   placeholder="Buscar club, jugador, país o ciudad..." 
+                   autocomplete="off" 
+                   spellcheck="false">
+            <span class="search-kbd" title="Atajo de teclado">/</span >
+            <button id="searchClearBtn" class="search-clear-btn" aria-label="Limpiar búsqueda" style="display: none;">&times;</button>
+          </div>
+          <div id="searchCounter" class="search-counter" style="display: none;"></div>
+        </div>
+
+        <div class="create-box">
+          <a href="{% url 'crear_equipo' %}" class="btn-crear btn-crear-equipo" title="Registrar un nuevo club">
+            <span class="btn-icon">＋</span>
+            <span>Nuevo Club</span>
+          </a>
+          <a href="{% url 'crear_jugador' %}" class="btn-crear btn-crear-jugador" title="Registrar un nuevo futbolista">
+            <span class="btn-icon">＋</span>
+            <span>Nuevo Jugador</span>
+          </a>
+          <a href="{% url 'crear_pais' %}" class="btn-crear btn-crear-pais" title="Registrar un nuevo país">
+            <span class="btn-icon">＋</span>
+            <span>Nuevo País</span>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -44,31 +90,44 @@
              data-pais-bandera="{% if equipo.pais and equipo.pais.imagen %}{{ equipo.pais.imagen.url }}{% endif %}"
              data-ciudad="{{ equipo.ciudad }}"
              data-escudo="{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}"
-             data-jugadores="{% for jugador in equipo.jugadores.all %}{{ jugador.nombre }} ({{ jugador.posicion }})|{% endfor %}">
+             data-total-jugadores="{{ equipo.jugadores.all|length }}"
+             data-jugadores="{% for jugador in equipo.jugadores.all %}{{ jugador.nombre }} ({{ jugador.posicion }})|{% endfor %}"
+             tabindex="0"
+             role="button"
+             aria-label="Abrir plantilla de {{ equipo.nombre }}">
           
           <div class="equipo-header-main">
+            <!-- Escudo circular con halo luminoso -->
             <div class="escudo-wrapper-main">
               {% if equipo.imagen %}
-                <img src="{{ equipo.imagen.url }}" alt="{{ equipo.nombre }}" class="escudo-img-main">
+                <img src="{{ equipo.imagen.url }}" alt="Escudo de {{ equipo.nombre }}" class="escudo-img-main">
               {% else %}
                 <div class="escudo-placeholder-main">{{ equipo.nombre|slice:":1" }}</div>
               {% endif %}
             </div>
             
             <h2>{{ equipo.nombre }}</h2>
+            
             <div class="equipo-ubicacion">
               {% if equipo.pais and equipo.pais.imagen %}
-                <img src="{{ equipo.pais.imagen.url }}" alt="{{ equipo.pais.nombre }}" class="bandera-icon bandera-card" width="18" height="12" title="{{ equipo.pais.nombre }}">
+                <img src="{{ equipo.pais.imagen.url }}" alt="{{ equipo.pais.nombre }}" class="bandera-icon bandera-card" width="19" height="13" title="{{ equipo.pais.nombre }}">
               {% else %}
                 <span class="ubicacion-pin">📍</span>
               {% endif %}
               <span>{{ equipo.ciudad }}{% if equipo.pais %}, {{ equipo.pais.nombre }}{% endif %}</span>
             </div>
-            <span class="badge-plantel-conteo">👥 {{ equipo.jugadores.count }} jugadores</span>
+            
+            <span class="badge-plantel-conteo">👥 {{ equipo.jugadores.all|length }} jugadores</span>
+            
             <div class="equipo-card-match-badge" style="display: none;"></div>
+            
+            <div class="equipo-card-footer">
+              <span>Ver plantilla</span>
+              <span aria-hidden="true">→</span>
+            </div>
           </div>
 
-          <!-- DATOS OCULTOS DE LOS JUGADORES -->
+          <!-- DATOS OCULTOS DE LOS JUGADORES (TEMPLATE) -->
           <template class="datos-jugadores">
             {% for jugador in equipo.jugadores.all %}
               <div class="modal-jugador-item"
@@ -91,7 +150,7 @@
                   <div class="modal-jugador-nombre">{{ jugador.nombre }}</div>
                   <div class="modal-jugador-nacion">
                     {% if jugador.pais_nacimiento and jugador.pais_nacimiento.imagen %}
-                      <img src="{{ jugador.pais_nacimiento.imagen.url }}" alt="{{ jugador.pais_nacimiento.nombre }}" class="bandera-icon-sm" width="16" height="11" title="{{ jugador.pais_nacimiento.nombre }}">
+                      <img src="{{ jugador.pais_nacimiento.imagen.url }}" alt="{{ jugador.pais_nacimiento.nombre }}" class="bandera-icon-sm" width="17" height="12" title="{{ jugador.pais_nacimiento.nombre }}">
                     {% else %}
                       <span>📍</span>
                     {% endif %}
@@ -100,6 +159,7 @@
                 </div>
 
                 <span class="badge-posicion">{{ jugador.posicion }}</span>
+                <span class="modal-jugador-arrow" aria-hidden="true">›</span>
               </div>
             {% empty %}
               <div class="empty-state-modal">Este equipo aún no tiene jugadores inscritos.</div>
@@ -110,15 +170,15 @@
       {% empty %}
         <div class="empty-state" style="grid-column: 1 / -1;">
           <h2>No se encontraron equipos registrados</h2>
-          <p>Registra tus primeros clubes desde el panel de administración.</p>
+          <p>Registra tus primeros clubes pulsando en "Nuevo Club".</p>
         </div>
       {% endfor %}
 
-      <!-- ESTADO CUANDO NO HAY COINCIDENCIAS DE BÚSQUEDA -->
+      <!-- ESTADO VACÍO DE BÚSQUEDA -->
       <div id="noSearchResults" class="empty-search-card" style="display: none;">
         <div class="empty-search-icon">🔎</div>
         <h3>No se encontraron resultados</h3>
-        <p id="noSearchText">No hay clubes ni deportistas que coincidan con tu búsqueda.</p>
+        <p id="noSearchText">No hay clubes ni futbolistas que coincidan con tu búsqueda.</p>
         <button id="resetSearchBtn" class="btn-reset-search">Restablecer búsqueda</button>
       </div>
 
@@ -126,9 +186,9 @@
   </div>
 
   <!-- 1. MODAL DEL EQUIPO (LISTA DE JUGADORES) -->
-  <div id="modalEquipoOverlay" class="modal-overlay">
+  <div id="modalEquipoOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalHeroNombre">
     <div class="modal-equipo-card">
-      <button id="modalEquipoClose" class="modal-close" aria-label="Cerrar">&times;</button>
+      <button id="modalEquipoClose" class="modal-close" aria-label="Cerrar modal">&times;</button>
       
       <div class="modal-equipo-hero">
         <div class="modal-hero-escudo">
@@ -138,7 +198,7 @@
         <div class="modal-hero-info">
           <h2 id="modalHeroNombre">Nombre Club</h2>
           <div class="modal-hero-ubicacion-box">
-            <img id="modalHeroBandera" src="" alt="Bandera País" class="bandera-icon bandera-hero" width="20" height="14" style="display: none;">
+            <img id="modalHeroBandera" src="" alt="Bandera País" class="bandera-icon bandera-hero" width="22" height="15" style="display: none;">
             <p id="modalHeroUbicacion">📍 Ubicación</p>
           </div>
         </div>
@@ -154,7 +214,7 @@
           <input type="text" 
                  id="modalPlantelFilter" 
                  class="modal-plantel-filter-input" 
-                 placeholder="Filtrar plantilla por nombre o posición..." 
+                 placeholder="🔍 Filtrar plantilla por nombre o posición..." 
                  autocomplete="off">
         </div>
 
@@ -166,10 +226,10 @@
   </div>
 
   <!-- 2. MODAL DE FICHA DEL JUGADOR -->
-  <div id="modalJugadorOverlay" class="modal-overlay">
+  <div id="modalJugadorOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="detalleNombre">
     <div class="modal-jugador-detalle-card">
-      <button id="modalJugadorVolver" class="modal-back-btn" aria-label="Volver">← Volver</button>
-      <button id="modalJugadorClose" class="modal-close" aria-label="Cerrar">&times;</button>
+      <button id="modalJugadorVolver" class="modal-back-btn" aria-label="Volver a la plantilla">← Volver al plantel</button>
+      <button id="modalJugadorClose" class="modal-close" aria-label="Cerrar ficha">&times;</button>
       
       <div class="modal-cover">
         <img id="detalleJugadorImg" src="" alt="Foto Jugador" class="modal-img">
@@ -187,7 +247,7 @@
 
         <h2 id="detalleNombre" class="modal-title">Nombre Jugador</h2>
         <div class="modal-sub-nacion">
-          <img id="detallePaisBandera" src="" alt="Bandera País" class="bandera-icon bandera-detalle" width="22" height="15" style="display: none;">
+          <img id="detallePaisBandera" src="" alt="Bandera País" class="bandera-icon bandera-detalle" width="24" height="16" style="display: none;">
           <p id="detallePais" class="modal-sub">📍 Nacionalidad</p>
         </div>
 
@@ -209,6 +269,15 @@
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .trim();
+    }
+
+    // Clasificador visual de posiciones de fútbol
+    function obtenerClasePosicion(posicion) {
+      const p = normalizar(posicion);
+      if (p.includes('portero') || p.includes('arquero')) return 'pos-portero';
+      if (p.includes('defensa') || p.includes('lateral') || p.includes('central')) return 'pos-defensa';
+      if (p.includes('delantero') || p.includes('extremo') || p.includes('punta')) return 'pos-delantero';
+      return 'pos-medio';
     }
 
     // Referencias Buscador Principal
@@ -248,7 +317,7 @@
     const detDesc = document.getElementById('detalleDescripcion');
 
     // ==========================================
-    // 1. LÓGICA DE BÚSQUEDA INTERACTIVA EN TIEMPO REAL
+    // 1. BÚSQUEDA INTERACTIVA EN TIEMPO REAL
     // ==========================================
     function ejecutarBusqueda() {
       const terminoOriginal = inputBuscador.value.trim();
@@ -310,11 +379,11 @@
       // Actualizar contador y estado vacío
       if (visibles > 0) {
         noSearchResults.style.display = 'none';
-        searchCounter.textContent = `Mostrando ${visibles} de ${totalEquipos} clubes`;
+        searchCounter.textContent = `⚡ Mostrando ${visibles} de ${totalEquipos} clubes`;
         searchCounter.style.display = 'block';
       } else {
         noSearchResults.style.display = 'block';
-        noSearchText.textContent = `No hay clubes ni jugadores que coincidan con "${terminoOriginal}".`;
+        noSearchText.textContent = `No hay clubes ni futbolistas que coincidan con "${terminoOriginal}".`;
         searchCounter.textContent = `0 resultados encontrados`;
         searchCounter.style.display = 'block';
       }
@@ -334,49 +403,67 @@
     // ==========================================
     // 2. ABRIR MODAL DE EQUIPO
     // ==========================================
-    equipoCards.forEach(card => {
-      card.addEventListener('click', () => {
-        heroNombre.textContent = card.dataset.nombre;
-        
-        const paisBandera = card.dataset.paisBandera;
-        if (paisBandera) {
-          heroBandera.src = paisBandera;
-          heroBandera.alt = card.dataset.pais || 'Bandera';
-          heroBandera.style.display = 'inline-block';
-          heroUbicacion.textContent = `${card.dataset.ciudad}, ${card.dataset.pais}`;
-        } else {
-          heroBandera.style.display = 'none';
-          heroUbicacion.textContent = `📍 ${card.dataset.ciudad}, ${card.dataset.pais}`;
-        }
-        
-        const escudoUrl = card.dataset.escudo;
-        if (escudoUrl) {
-          heroImg.src = escudoUrl;
-          heroImg.style.display = 'block';
-          heroPlaceholder.style.display = 'none';
-        } else {
-          heroImg.style.display = 'none';
-          heroPlaceholder.style.display = 'flex';
-          heroPlaceholder.textContent = card.dataset.nombre.charAt(0);
-        }
+    function abrirModalEquipo(card) {
+      heroNombre.textContent = card.dataset.nombre;
+      
+      const paisBandera = card.dataset.paisBandera;
+      if (paisBandera) {
+        heroBandera.src = paisBandera;
+        heroBandera.alt = card.dataset.pais || 'Bandera';
+        heroBandera.style.display = 'inline-block';
+        heroUbicacion.textContent = `${card.dataset.ciudad}, ${card.dataset.pais}`;
+      } else {
+        heroBandera.style.display = 'none';
+        heroUbicacion.textContent = `📍 ${card.dataset.ciudad}, ${card.dataset.pais}`;
+      }
+      
+      const escudoUrl = card.dataset.escudo;
+      if (escudoUrl) {
+        heroImg.src = escudoUrl;
+        heroImg.style.display = 'block';
+        heroPlaceholder.style.display = 'none';
+      } else {
+        heroImg.style.display = 'none';
+        heroPlaceholder.style.display = 'flex';
+        heroPlaceholder.textContent = card.dataset.nombre.charAt(0);
+      }
 
-        const template = card.querySelector('.datos-jugadores');
-        contenedorJugadores.innerHTML = '';
-        const contenidoClonado = template.content.cloneNode(true);
+      const template = card.querySelector('.datos-jugadores');
+      contenedorJugadores.innerHTML = '';
+      if (template) {
+        const contenidoClonado = template.content 
+          ? template.content.cloneNode(true) 
+          : template.cloneNode(true);
         contenedorJugadores.appendChild(contenidoClonado);
+      }
 
-        const total = contenedorJugadores.querySelectorAll('.modal-jugador-item').length;
-        plantelBadge.textContent = `${total} Jugadores`;
+      const items = contenedorJugadores.querySelectorAll('.modal-jugador-item');
+      const totalCount = items.length || parseInt(card.dataset.totalJugadores || '0', 10);
+      plantelBadge.textContent = `${totalCount} Jugadores`;
 
-        // Limpiar filtro interno del modal de plantel
-        modalPlantelFilter.value = '';
+      // Aplicar clases de posición dinámica a los badges
+      items.forEach(jugadorItem => {
+        const badge = jugadorItem.querySelector('.badge-posicion');
+        if (badge) {
+          const clasePos = obtenerClasePosicion(jugadorItem.dataset.posicion);
+          badge.classList.add(clasePos);
+        }
+        jugadorItem.addEventListener('click', () => abrirFichaJugador(jugadorItem));
+      });
 
-        // Asignar evento click a cada jugador inyectado
-        contenedorJugadores.querySelectorAll('.modal-jugador-item').forEach(jugadorItem => {
-          jugadorItem.addEventListener('click', () => abrirFichaJugador(jugadorItem));
-        });
+      // Limpiar filtro interno del modal de plantel
+      modalPlantelFilter.value = '';
 
-        equipoOverlay.classList.add('active');
+      equipoOverlay.classList.add('active');
+    }
+
+    equipoCards.forEach(card => {
+      card.addEventListener('click', () => abrirModalEquipo(card));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          abrirModalEquipo(card);
+        }
       });
     });
 
@@ -405,6 +492,10 @@
     function abrirFichaJugador(item) {
       detNombre.textContent = item.dataset.nombre;
       detPos.textContent = item.dataset.posicion;
+      
+      // Aplicar color de posición a la ficha
+      detPos.className = 'badge-posicion ' + obtenerClasePosicion(item.dataset.posicion);
+
       detDesc.textContent = item.dataset.descripcion;
       detEqNombre.textContent = item.dataset.equipoNombre;
 
