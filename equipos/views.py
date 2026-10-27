@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Equipo, Jugador, Pais
 from .forms import FormsEquipo, FormsJugador, FormsPais
@@ -74,3 +74,52 @@ def crear_pais(request):
         return redirect('lista_equipos')
 
     return render(request, 'equipos/crear_pais.html', {'form': form})
+
+def editar_equipo(request, codigo_equipo):
+    equipo = get_object_or_404(Equipo, codigo_equipo=codigo_equipo)
+    form = FormsEquipo(request.POST or None, request.FILES or None, instance=equipo)
+    if 'codigo_equipo' in form.fields:
+        form.fields['codigo_equipo'].disabled = True
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, f'Club "{equipo.nombre}" actualizado correctamente')
+        return redirect('lista_equipos')
+
+    return render(request, 'equipos/editar_equipo.html', {
+        'form': form,
+        'equipo': equipo,
+        'titulo': f'Editar Equipo: {equipo.nombre}'
+    })
+
+
+def editar_jugador(request, jugador_id):
+    jugador = get_object_or_404(Jugador, pk=jugador_id)
+    form = FormsJugador(request.POST or None, request.FILES or None, instance=jugador)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, f'Futbolista "{jugador.nombre}" actualizado correctamente')
+        return redirect('lista_jugadores')
+
+    return render(request, 'equipos/editar_jugador.html', {
+        'form': form,
+        'jugador': jugador,
+        'titulo': f'Editar Jugador: {jugador.nombre}'
+    })
+
+
+def editar_pais(request, pais_id):
+    pais = get_object_or_404(Pais, pk=pais_id)
+    form = FormsPais(request.POST or None, request.FILES or None, instance=pais)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, f'País "{pais.nombre}" actualizado correctamente')
+        return redirect('lista_paises')
+
+    return render(request, 'equipos/editar_pais.html', {
+        'form': form,
+        'pais': pais,
+        'titulo': f'Editar País: {pais.nombre}'
+    })

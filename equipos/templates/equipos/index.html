@@ -1,20 +1,29 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#02050c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Club de Fútbol | Panel Oficial de Equipos & Clubes</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=12">
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
 </head>
 <body>
 
-  <!-- BARRA DE NOTICIAS DEPORTIVAS (SPORTS TICKER) -->
+  
+
+  
+  <!-- FONDO DE PANTALLA: ESTADIO DE FÚTBOL CON LUCES (SOLO CLUBES / EQUIPOS) -->
+  <div class="stadium-bg stadium-bg-clubes" aria-hidden="true">
+    <div class="sb-sky"></div>
+    <div class="sb-vignette"></div>
+  </div>
+<!-- BARRA DE NOTICIAS DEPORTIVAS (SPORTS TICKER) -->
   <div class="sports-ticker-bar">
     <div class="sports-ticker-label">
       <span class="ticker-pulse"></span> EN VIVO
@@ -129,6 +138,7 @@
         {% for equipo in equipos %}
           <div class="equipo-card" 
                data-nombre="{{ equipo.nombre }}"
+               data-codigo="{{ equipo.codigo_equipo }}"
                data-pais="{{ equipo.pais.nombre|default:equipo.pais }}"
                data-pais-bandera="{% if equipo.pais and equipo.pais.imagen %}{{ equipo.pais.imagen.url }}{% endif %}"
                data-ciudad="{{ equipo.ciudad }}"
@@ -171,8 +181,10 @@
               <div class="equipo-card-match-badge" style="display: none;"></div>
               
               <div class="equipo-card-footer">
-                <span>Ver plantilla</span>
-                <span aria-hidden="true">→</span>
+                <a href="{% url 'editar_equipo' equipo.codigo_equipo %}" class="btn-card-edit" onclick="event.stopPropagation();" title="Editar este club">
+                  ✏️ Editar
+                </a>
+                <span>Ver plantilla <span aria-hidden="true">→</span></span>
               </div>
             </div>
 
@@ -272,7 +284,10 @@
           <div id="modalHeroPlaceholder" class="modal-hero-placeholder">🛡️</div>
         </div>
         <div class="modal-hero-info">
-          <h2 id="modalHeroNombre">Nombre Club</h2>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
+            <h2 id="modalHeroNombre" style="margin: 0;">Nombre Club</h2>
+            <a id="modalHeroEditBtn" href="#" class="btn-card-edit" title="Editar este club">✏️ Editar Club</a>
+          </div>
           <div class="modal-hero-ubicacion-box">
             <img id="modalHeroBandera" src="" alt="Bandera País" class="bandera-icon bandera-hero" width="22" height="15" style="display: none;">
             <p id="modalHeroUbicacion">📍 Ubicación</p>
@@ -729,6 +744,16 @@
     // Modal de Equipo
     function abrirModalEquipo(card) {
       heroNombre.textContent = card.dataset.nombre;
+
+      const editBtn = document.getElementById('modalHeroEditBtn');
+      if (editBtn) {
+        if (card.dataset.codigo) {
+          editBtn.href = '/editar_equipo/' + card.dataset.codigo + '/';
+          editBtn.style.display = 'inline-flex';
+        } else {
+          editBtn.style.display = 'none';
+        }
+      }
       
       const paisBandera = card.dataset.paisBandera;
       if (paisBandera) {

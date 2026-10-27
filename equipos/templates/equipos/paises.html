@@ -1,20 +1,29 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#02050c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Club de Fútbol | Selección de Países & Futbolistas</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=12">
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
 </head>
 <body>
 
-  <!-- BARRA DE NOTICIAS DEPORTIVAS (SPORTS TICKER) -->
+  
+
+  
+  <!-- FONDO DE PANTALLA: PLANETA TIERRA Y FÚTBOL GLOBAL (PAÍSES) -->
+  <div class="stadium-bg stadium-bg-paises" aria-hidden="true">
+    <div class="sb-sky"></div>
+    <div class="sb-vignette"></div>
+  </div>
+<!-- BARRA DE NOTICIAS DEPORTIVAS (SPORTS TICKER) -->
   <div class="sports-ticker-bar">
     <div class="sports-ticker-label">
       <span class="ticker-pulse"></span> EN VIVO
@@ -164,8 +173,10 @@
               <div class="equipo-card-match-badge" style="display: none;"></div>
               
               <div class="equipo-card-footer">
-                <span>Ver futbolistas</span>
-                <span aria-hidden="true">→</span>
+                <a href="{% url 'editar_pais' pais.id %}" class="btn-card-edit" onclick="event.stopPropagation();" title="Editar este país">
+                  ✏️ Editar
+                </a>
+                <span>Ver futbolistas <span aria-hidden="true">→</span></span>
               </div>
             </div>
 

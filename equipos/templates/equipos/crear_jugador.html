@@ -1,17 +1,26 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="theme-color" content="#02050c">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscribir Futbolista | Panel de Fútbol</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
 </head>
 <body>
-    <div class="container form-shell">
+
+  
+    
+  <!-- FONDO DE PANTALLA: ESTADIO DE FÚTBOL CON LUCES -->
+  <div class="stadium-bg stadium-bg-jugadores" aria-hidden="true">
+    <div class="sb-sky"></div>
+    <div class="sb-vignette"></div>
+  </div>
+<div class="container form-shell">
         <div class="form-card">
             <div class="form-header">
                 <span class="form-kicker">🏃 FICHA TÉCNICA</span>

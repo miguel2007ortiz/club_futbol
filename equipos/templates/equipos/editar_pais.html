@@ -1,0 +1,97 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#02050c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar País | Panel de Fútbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
+</head>
+<body>
+
+  
+    
+  <!-- FONDO DE PANTALLA: PLANETA TIERRA Y FÚTBOL GLOBAL (PAÍSES) -->
+  <div class="stadium-bg stadium-bg-paises" aria-hidden="true">
+    <div class="sb-sky"></div>
+    <div class="sb-vignette"></div>
+  </div>
+<div class="container form-shell">
+        <nav class="breadcrumb" aria-label="Ruta de navegación">
+            <a href="{% url 'lista_equipos' %}">Panel</a>
+            <span aria-hidden="true">›</span>
+            <a href="{% url 'lista_paises' %}">Países</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Editar país</span>
+        </nav>
+
+        <div class="form-card">
+            <div class="form-header">
+                <span class="form-kicker">🌍 Catálogo internacional</span>
+                <h1>Editar país</h1>
+                <p>Modifica los datos del país y pulsa <strong>Guardar cambios</strong>.</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-success"><span>✓</span><span>{{ message }}</span></div>
+                {% endfor %}
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="alert-danger"><span>⚠️</span><span>No se pudo guardar: revisa los campos marcados.</span></div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="team-form" novalidate>
+                {% csrf_token %}
+
+                <fieldset class="form-section">
+                    <legend class="section-head">
+                        <span class="section-num">1</span>
+                        <span><strong>Datos del país</strong><small>Nombre y continente.</small></span>
+                    </legend>
+                    <div class="form-grid">
+                        <div class="field-group {% if form.nombre.errors %}has-error{% endif %}">
+                            <label for="{{ form.nombre.id_for_label }}">🏳️ Nombre del país <span class="req">*</span></label>
+                            {{ form.nombre }}
+                            <small class="field-hint">No puede repetirse con otro país.</small>
+                            {% for error in form.nombre.errors %}<div class="errorlist"><span>⚠️ {{ error }}</span></div>{% endfor %}
+                        </div>
+                        <div class="field-group {% if form.continente.errors %}has-error{% endif %}">
+                            <label for="{{ form.continente.id_for_label }}">🌐 Continente <span class="req">*</span></label>
+                            {{ form.continente }}
+                            {% for error in form.continente.errors %}<div class="errorlist"><span>⚠️ {{ error }}</span></div>{% endfor %}
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend class="section-head">
+                        <span class="section-num">2</span>
+                        <span><strong>Bandera</strong><small>Si no eliges un archivo se conserva la actual.</small></span>
+                    </legend>
+                    <div class="form-grid">
+                        <div class="field-group full-width {% if form.imagen.errors %}has-error{% endif %}">
+                            <label for="{{ form.imagen.id_for_label }}">🚩 Bandera oficial</label>
+                            {{ form.imagen }}
+                            {% for error in form.imagen.errors %}<div class="errorlist"><span>⚠️ {{ error }}</span></div>{% endfor %}
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="action-bar">
+                    <div class="action-bar-buttons">
+                        <a href="{% url 'lista_paises' %}" class="btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn-primary">💾 Guardar cambios</button>
+                    </div>
+                </div>
+                <p class="form-legend-note"><span class="req">*</span> Campo obligatorio</p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

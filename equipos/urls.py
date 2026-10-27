@@ -8,4 +8,7 @@ urlpatterns = [
     path('crear_equipo/', views.crear_equipo, name='crear_equipo'),
     path('crear_jugador/', views.crear_jugador, name='crear_jugador'),
     path('crear_pais/', views.crear_pais, name='crear_pais'),
+    path('editar_equipo/<int:codigo_equipo>/', views.editar_equipo, name='editar_equipo'),
+    path('editar_jugador/<int:jugador_id>/', views.editar_jugador, name='editar_jugador'),
+    path('editar_pais/<int:pais_id>/', views.editar_pais, name='editar_pais'),
 ]
