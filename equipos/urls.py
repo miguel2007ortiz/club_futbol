@@ -11,4 +11,7 @@ urlpatterns = [
     path('editar_equipo/<int:codigo_equipo>/', views.editar_equipo, name='editar_equipo'),
     path('editar_jugador/<int:jugador_id>/', views.editar_jugador, name='editar_jugador'),
     path('editar_pais/<int:pais_id>/', views.editar_pais, name='editar_pais'),
+    path('eliminar_equipo/<int:codigo_equipo>/', views.eliminar_equipo, name='eliminar_equipo'),
+    path('eliminar_jugador/<int:jugador_id>/', views.eliminar_jugador, name='eliminar_jugador'),
+    path('eliminar_pais/<int:pais_id>/', views.eliminar_pais, name='eliminar_pais'),
 ]

@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#02050c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar País: {{ pais.nombre }} | Panel de Fútbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=22">
+</head>
+<body>
+
+    <!-- FONDO DE PANTALLA: PLANETA TIERRA Y FÚTBOL GLOBAL -->
+    <div class="stadium-bg stadium-bg-paises" aria-hidden="true">
+        <div class="sb-sky"></div>
+        <div class="sb-vignette"></div>
+    </div>
+
+    <div class="container form-shell">
+        <nav class="breadcrumb" aria-label="Ruta de navegación">
+            <a href="{% url 'lista_equipos' %}">Panel</a>
+            <span aria-hidden="true">›</span>
+            <a href="{% url 'lista_paises' %}">Países</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Eliminar país</span>
+        </nav>
+
+        <div class="form-card delete-card">
+            <div class="form-header delete-header">
+                <span class="delete-kicker">⚠️ ZONA DE PELIGRO</span>
+                <h1>¿Eliminar este país?</h1>
+                <p>Estás a punto de borrar esta nación del registro geográfico oficial del sistema.</p>
+            </div>
+
+            <!-- TARJETA RESUMEN DEL PAÍS A ELIMINAR -->
+            <div class="delete-preview-box">
+                <div class="delete-preview-media delete-flag-media">
+                    {% if pais.imagen %}
+                        <img src="{{ pais.imagen.url }}" alt="Bandera de {{ pais.nombre }}" class="delete-preview-img delete-flag-img">
+                    {% else %}
+                        <div class="delete-preview-placeholder">{{ pais.nombre|slice:":1" }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="delete-preview-info">
+                    <span class="delete-item-type">Nación / Federación</span>
+                    <h2>{{ pais.nombre }}</h2>
+                    <div class="delete-preview-meta">
+                        <span class="badge-continente">🌍 {{ pais.continente }}</span>
+                        <span class="meta-dot">•</span>
+                        <span>🏟️ {{ total_equipos }} club{{ total_equipos|pluralize:"es" }}</span>
+                        <span class="meta-dot">•</span>
+                        <span>👥 {{ total_jugadores }} futbolista{{ total_jugadores|pluralize:"s" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="delete-alert-warning">
+                <div class="warning-icon">ℹ️</div>
+                <div class="warning-text">
+                    <strong>Impacto en clubes y jugadores</strong>
+                    <p>Los clubes y futbolistas de <strong>{{ pais.nombre }}</strong> no se borrarán; su nacionalidad o país de sede quedará temporalmente sin asignar.</p>
+                </div>
+            </div>
+
+            <form method="post" class="delete-form-action">
+                {% csrf_token %}
+                <div class="action-bar delete-action-bar">
+                    <a href="{% url 'lista_paises' %}" class="btn-secondary">
+                        ← Cancelar y volver
+                    </a>
+                    <button type="submit" class="btn-danger">
+                        🗑️ Sí, eliminar país
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

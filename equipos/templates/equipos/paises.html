@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=22">
 </head>
 <body>
 
@@ -173,9 +173,14 @@
               <div class="equipo-card-match-badge" style="display: none;"></div>
               
               <div class="equipo-card-footer">
-                <a href="{% url 'editar_pais' pais.id %}" class="btn-card-edit" onclick="event.stopPropagation();" title="Editar este país">
-                  ✏️ Editar
-                </a>
+                <div class="card-footer-actions">
+                  <a href="{% url 'editar_pais' pais.id %}" class="btn-card-edit" onclick="event.stopPropagation();" title="Editar este país">
+                    ✏️ Editar
+                  </a>
+                  <a href="{% url 'eliminar_pais' pais.id %}" class="btn-card-delete-sm" onclick="event.stopPropagation();" title="Eliminar este país">
+                    🗑️
+                  </a>
+                </div>
                 <span>Ver futbolistas <span aria-hidden="true">→</span></span>
               </div>
             </div>

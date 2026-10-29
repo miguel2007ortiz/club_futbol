@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#02050c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Futbolista: {{ jugador.nombre }} | Panel de Fútbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=22">
+</head>
+<body>
+
+    <!-- FONDO DE PANTALLA: ILUSTRACIÓN DE FUTBOLISTAS EN ACCIÓN -->
+    <div class="stadium-bg stadium-bg-jugadores" aria-hidden="true">
+        <div class="sb-sky"></div>
+        <div class="sb-vignette"></div>
+    </div>
+
+    <div class="container form-shell">
+        <nav class="breadcrumb" aria-label="Ruta de navegación">
+            <a href="{% url 'lista_equipos' %}">Panel</a>
+            <span aria-hidden="true">›</span>
+            <a href="{% url 'lista_jugadores' %}">Futbolistas</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Eliminar futbolista</span>
+        </nav>
+
+        <div class="form-card delete-card">
+            <div class="form-header delete-header">
+                <span class="delete-kicker">⚠️ ZONA DE PELIGRO</span>
+                <h1>¿Eliminar este futbolista?</h1>
+                <p>Estás a punto de desvincular y eliminar permanentemente la ficha técnica de este jugador.</p>
+            </div>
+
+            <!-- TARJETA RESUMEN DEL JUGADOR A ELIMINAR -->
+            <div class="delete-preview-box">
+                <div class="delete-preview-media">
+                    {% if jugador.imagen %}
+                        <img src="{{ jugador.imagen.url }}" alt="Foto de {{ jugador.nombre }}" class="delete-preview-img">
+                    {% else %}
+                        <div class="delete-preview-placeholder">⚽</div>
+                    {% endif %}
+                </div>
+
+                <div class="delete-preview-info">
+                    <span class="delete-item-type">Ficha de Futbolista</span>
+                    <h2>{{ jugador.nombre }}</h2>
+                    <div class="delete-preview-meta">
+                        <span class="badge-posicion">{{ jugador.posicion }}</span>
+                        <span class="meta-dot">•</span>
+                        <span>🏟️ {{ jugador.equipo.nombre }}</span>
+                        {% if jugador.pais_nacimiento %}
+                            <span class="meta-dot">•</span>
+                            <span>📍 {{ jugador.pais_nacimiento.nombre }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if jugador.descripcion %}
+                <div class="delete-detail-box">
+                    <span class="detail-label">Perfil / Descripción:</span>
+                    <p class="detail-text">"{{ jugador.descripcion }}"</p>
+                </div>
+            {% endif %}
+
+            <div class="delete-alert-warning">
+                <div class="warning-icon">ℹ️</div>
+                <div class="warning-text">
+                    <strong>Confirmación requerida</strong>
+                    <p>Al confirmar, se eliminarán sus datos personales, posición y estadísticas del club <strong>{{ jugador.equipo.nombre }}</strong>.</p>
+                </div>
+            </div>
+
+            <form method="post" class="delete-form-action">
+                {% csrf_token %}
+                <div class="action-bar delete-action-bar">
+                    <a href="{% url 'lista_jugadores' %}" class="btn-secondary">
+                        ← Cancelar y volver
+                    </a>
+                    <button type="submit" class="btn-danger">
+                        🗑️ Sí, eliminar futbolista
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

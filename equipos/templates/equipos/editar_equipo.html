@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
+    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=22">
 </head>
 <body>
   <!-- FONDO DE PANTALLA: ESTADIO DE FÚTBOL CON LUCES (SOLO CLUBES / EQUIPOS) -->
@@ -95,6 +95,7 @@
                 </fieldset>
 
                 <div class="action-bar">
+                    <a href="{% url 'eliminar_equipo' equipo.codigo_equipo %}" class="btn-card-delete" title="Eliminar este club">🗑️ Eliminar club</a>
                     <div class="action-bar-buttons">
                         <a href="{% url 'lista_equipos' %}" class="btn-secondary">Cancelar</a>
                         <button type="submit" class="btn-primary">💾 Guardar cambios</button>

@@ -123,3 +123,46 @@ def editar_pais(request, pais_id):
         'pais': pais,
         'titulo': f'Editar País: {pais.nombre}'
     })
+
+
+def eliminar_equipo(request, codigo_equipo):
+    equipo = get_object_or_404(Equipo, codigo_equipo=codigo_equipo)
+    if request.method == 'POST':
+        nombre = equipo.nombre
+        equipo.delete()
+        messages.success(request, f'Club "{nombre}" eliminado correctamente.')
+        return redirect('lista_equipos')
+
+    return render(request, 'equipos/eliminar_equipo.html', {
+        'equipo': equipo,
+        'total_jugadores': equipo.jugadores.count(),
+        'jugadores': equipo.jugadores.all()[:6]
+    })
+
+
+def eliminar_jugador(request, jugador_id):
+    jugador = get_object_or_404(Jugador, pk=jugador_id)
+    if request.method == 'POST':
+        nombre = jugador.nombre
+        jugador.delete()
+        messages.success(request, f'Futbolista "{nombre}" eliminado correctamente.')
+        return redirect('lista_jugadores')
+
+    return render(request, 'equipos/eliminar_jugador.html', {
+        'jugador': jugador
+    })
+
+
+def eliminar_pais(request, pais_id):
+    pais = get_object_or_404(Pais, pk=pais_id)
+    if request.method == 'POST':
+        nombre = pais.nombre
+        pais.delete()
+        messages.success(request, f'País "{nombre}" eliminado correctamente.')
+        return redirect('lista_paises')
+
+    return render(request, 'equipos/eliminar_pais.html', {
+        'pais': pais,
+        'total_equipos': pais.equipos.count(),
+        'total_jugadores': pais.jugadores.count()
+    })

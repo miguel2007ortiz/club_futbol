@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#02050c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Club: {{ equipo.nombre }} | Panel de Fútbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=22">
+</head>
+<body>
+
+    <!-- FONDO DE PANTALLA: ESTADIO DE FÚTBOL CON LUCES -->
+    <div class="stadium-bg stadium-bg-clubes" aria-hidden="true">
+        <div class="sb-sky"></div>
+        <div class="sb-vignette"></div>
+    </div>
+
+    <div class="container form-shell">
+        <nav class="breadcrumb" aria-label="Ruta de navegación">
+            <a href="{% url 'lista_equipos' %}">Panel</a>
+            <span aria-hidden="true">›</span>
+            <a href="{% url 'lista_equipos' %}">Clubes</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Eliminar club</span>
+        </nav>
+
+        <div class="form-card delete-card">
+            <div class="form-header delete-header">
+                <span class="delete-kicker">⚠️ ZONA DE PELIGRO</span>
+                <h1>¿Eliminar este club?</h1>
+                <p>Esta acción es permanente y no se puede deshacer. Por favor confirma que deseas borrar este registro de la base de datos.</p>
+            </div>
+
+            <!-- TARJETA RESUMEN DEL CLUB A ELIMINAR -->
+            <div class="delete-preview-box">
+                <div class="delete-preview-media">
+                    {% if equipo.imagen %}
+                        <img src="{{ equipo.imagen.url }}" alt="Escudo de {{ equipo.nombre }}" class="delete-preview-img">
+                    {% else %}
+                        <div class="delete-preview-placeholder">{{ equipo.nombre|slice:":1" }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="delete-preview-info">
+                    <span class="delete-item-type">Club de Fútbol</span>
+                    <h2>{{ equipo.nombre }}</h2>
+                    <div class="delete-preview-meta">
+                        <span>📍 {{ equipo.ciudad }}{% if equipo.pais %}, {{ equipo.pais.nombre }}{% endif %}</span>
+                        <span class="meta-dot">•</span>
+                        <span>👥 {{ total_jugadores }} futbolista{{ total_jugadores|pluralize:"s" }} registrado{{ total_jugadores|pluralize:"s" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if total_jugadores > 0 %}
+                <div class="delete-alert-warning">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-text">
+                        <strong>Atención: Se eliminarán {{ total_jugadores }} jugador{{ total_jugadores|pluralize:"es" }} asociados</strong>
+                        <p>Al borrar el club <strong>{{ equipo.nombre }}</strong>, todos los futbolistas que pertenecen a su plantilla también se eliminarán automáticamente del sistema.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" class="delete-form-action">
+                {% csrf_token %}
+                <div class="action-bar delete-action-bar">
+                    <a href="{% url 'lista_equipos' %}" class="btn-secondary">
+                        ← Cancelar y volver
+                    </a>
+                    <button type="submit" class="btn-danger">
+                        🗑️ Sí, eliminar club
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

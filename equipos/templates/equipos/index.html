@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=21">
+  <link rel="stylesheet" href="{% static 'equipos/css/styles.css' %}?v=22">
 </head>
 <body>
 
@@ -181,9 +181,14 @@
               <div class="equipo-card-match-badge" style="display: none;"></div>
               
               <div class="equipo-card-footer">
-                <a href="{% url 'editar_equipo' equipo.codigo_equipo %}" class="btn-card-edit" onclick="event.stopPropagation();" title="Editar este club">
-                  ✏️ Editar
-                </a>
+                <div class="card-footer-actions">
+                  <a href="{% url 'editar_equipo' equipo.codigo_equipo %}" class="btn-card-edit" onclick="event.stopPropagation();" title="Editar este club">
+                    ✏️ Editar
+                  </a>
+                  <a href="{% url 'eliminar_equipo' equipo.codigo_equipo %}" class="btn-card-delete-sm" onclick="event.stopPropagation();" title="Eliminar este club">
+                    🗑️
+                  </a>
+                </div>
                 <span>Ver plantilla <span aria-hidden="true">→</span></span>
               </div>
             </div>
@@ -286,7 +291,10 @@
         <div class="modal-hero-info">
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
             <h2 id="modalHeroNombre" style="margin: 0;">Nombre Club</h2>
-            <a id="modalHeroEditBtn" href="#" class="btn-card-edit" title="Editar este club">✏️ Editar Club</a>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <a id="modalHeroEditBtn" href="#" class="btn-card-edit" title="Editar este club">✏️ Editar Club</a>
+              <a id="modalHeroDeleteBtn" href="#" class="btn-card-delete-sm" title="Eliminar este club">🗑️ Eliminar Club</a>
+            </div>
           </div>
           <div class="modal-hero-ubicacion-box">
             <img id="modalHeroBandera" src="" alt="Bandera País" class="bandera-icon bandera-hero" width="22" height="15" style="display: none;">
@@ -749,6 +757,8 @@
       if (editBtn) {
         if (card.dataset.codigo) {
           editBtn.href = '/editar_equipo/' + card.dataset.codigo + '/';
+          const delBtn = document.getElementById('modalHeroDeleteBtn');
+          if (delBtn) delBtn.href = '/eliminar_equipo/' + card.dataset.codigo + '/';
           editBtn.style.display = 'inline-flex';
         } else {
           editBtn.style.display = 'none';
